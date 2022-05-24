@@ -39,7 +39,7 @@ main() {
   fi
   find_base_commit
 
-  STATUS=$(git rev-parse HEAD)
+  STATUS=$(git diff --name-only "$BASE_COMMIT")
   echo $STATUS
 
   # Get files Added or Modified wrt base commit, filter for Python,
