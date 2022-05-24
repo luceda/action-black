@@ -39,9 +39,11 @@ main() {
   fi
   find_base_commit
 
-  STATUS=$(git diff --name-only $BASE_COMMIT)
+  git fetch -all
+
+  STATUS=$(git diff --name-only "$BASE_COMMIT")
   echo $STATUS
-  STATUS2=$(git diff --name-only --diff-filter=AM $BASE_COMMIT)
+  STATUS2=$(git diff --name-only --diff-filter=AM "$BASE_COMMIT")
   echo $STATUS2
 
   # Get files Added or Modified wrt base commit, filter for Python,
