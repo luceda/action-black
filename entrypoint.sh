@@ -39,7 +39,8 @@ main() {
   fi
   find_base_commit
 
-  git config --global core.pager ''
+  STATUS=$(git status)
+  echo $STATUS
 
   # Get files Added or Modified wrt base commit, filter for Python,
   # replace new lines with space.
