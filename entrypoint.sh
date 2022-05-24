@@ -39,7 +39,7 @@ main() {
   fi
   find_base_commit
 
-  git fetch -all
+  git fetch --all
 
   STATUS=$(git diff --name-only "$BASE_COMMIT")
   echo $STATUS
