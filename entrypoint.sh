@@ -39,8 +39,10 @@ main() {
   fi
   find_base_commit
 
-  STATUS=$(git diff --name-only "$BASE_COMMIT")
+  STATUS=$(git diff --name-only $BASE_COMMIT)
   echo $STATUS
+  STATUS2=$(git diff --name-only --diff-filter=AM $BASE_COMMIT)
+  echo $STATUS2
 
   # Get files Added or Modified wrt base commit, filter for Python,
   # replace new lines with space.
