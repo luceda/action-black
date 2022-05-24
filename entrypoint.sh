@@ -2,8 +2,76 @@
 set -e # Increase bash strictness
 set -o pipefail
 
+# find base commit:
+if [[ -z "$GITHUB_EVENT_PATH" ]]; then
+  echo "Set the GITHUB_EVENT_PATH env variable."
+  exit 1
+fi
+
+find_base_commit() {
+    BASE_COMMIT=$(
+        jq \
+            --raw-output \
+            .pull_request.base.sha \
+            "$GITHUB_EVENT_PATH"
+    )
+    # If this is not a pull request action it can be a check suite re-requested
+    if [ "$BASE_COMMIT" == null ]; then
+        BASE_COMMIT=$(
+            jq \
+                --raw-output \
+                .check_suite.pull_requests[0].base.sha \
+                "$GITHUB_EVENT_PATH"
+        )
+    fi
+}
+
+ACTION=$(
+    jq --raw-output .action "$GITHUB_EVENT_PATH"
+)
+
+# First 2 actions are for pull requests, last 2 are for check suites.
+ENABLED_ACTIONS='synchronize opened requested rerequested'
+
+if [[ $ENABLED_ACTIONS != *"$ACTION"* ]]; then
+        echo -e "Not interested in this event: $ACTION.\nExiting..."
+        exit
+fi
+
+find_base_commit
+
+echo "BASE_COMMIT:"
+echo $BASE_COMMIT
+
+# Find adjusted files in PR:
+new_files_in_branch=$(
+    git diff \
+        --name-only \
+        --diff-filter=AM \
+        "$BASE_COMMIT"
+)
+new_files_in_branch1=$(echo $new_files_in_branch | tr '\n' ' ')
+
+echo "New files in branch: $new_files_in_branch1"
+# Feed to flake8 which will return the output in json format.
+# shellcheck disable=SC2086
+
+n_errors=0
+
+if [[ $new_files_in_branch =~ .*".py".* ]]; then
+    pattern=$(echo $1 | tr -s ' ' '\|')
+    new_python_files_in_branch=$(
+        echo "$new_files_in_branch" | grep -E '.py$' | grep -E "${pattern}"
+    )
+    echo "New $1 files in branch: $new_python_files_in_branch"
+else
+  new_python_files_in_branch=""
+  echo "No new $1 files in branch"
+fi
+
+
 # If no arguments are given use current working directory
-black_args=(".")
+black_args=("$new_python_files_in_branch")
 if [[ "$#" -eq 0 && "${INPUT_BLACK_ARGS}" != "" ]]; then
   black_args+=(${INPUT_BLACK_ARGS})
 elif [[ "$#" -ne 0 && "${INPUT_BLACK_ARGS}" != "" ]]; then
