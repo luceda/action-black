@@ -41,11 +41,6 @@ main() {
 
   git fetch --all
 
-  STATUS=$(git diff --name-only "$BASE_COMMIT")
-  echo $STATUS
-  STATUS2=$(git diff --name-only --diff-filter=AM "$BASE_COMMIT")
-  echo $STATUS2
-
   # Get files Added or Modified wrt base commit, filter for Python,
   # replace new lines with space.
   new_files_in_branch=$(
@@ -76,9 +71,9 @@ main() {
     black_args+=($* ${INPUT_BLACK_ARGS})
   elif [[ "$#" -ne 0 && "${INPUT_BLACK_ARGS}" == "" ]]; then
     black_args+=($*)
-  else
+#  else
     # Default (if no args provided).
-    black_args+=("--check" "--diff")
+#    black_args+=("--check" "--diff")
   fi
 
   # Check if formatting was requested
