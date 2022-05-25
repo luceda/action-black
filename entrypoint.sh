@@ -61,6 +61,10 @@ main() {
         "$BASE_COMMIT" | grep '\.py$' | tr '\n' ' '
     )
     echo "New python files in branch: $new_python_files_in_branch"
+  else
+    echo "No new python files in branch, no need to run black!"
+    echo "Exiting."
+    exit 0
   fi
 
   # If no arguments are given use current working directory
