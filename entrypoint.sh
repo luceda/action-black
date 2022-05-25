@@ -71,9 +71,9 @@ main() {
     black_args+=($* ${INPUT_BLACK_ARGS})
   elif [[ "$#" -ne 0 && "${INPUT_BLACK_ARGS}" == "" ]]; then
     black_args+=($*)
-#  else
+  else
     # Default (if no args provided).
-#    black_args+=("--check" "--diff")
+    black_args+=("--check" "--diff")
   fi
 
   # Check if formatting was requested
