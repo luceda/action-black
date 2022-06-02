@@ -39,7 +39,7 @@ main() {
   fi
   find_base_commit
 
-  git fetch --all
+  git fetch $BASE_COMMIT
 
   # Get files Added or Modified wrt base commit, filter for Python,
   # replace new lines with space.
